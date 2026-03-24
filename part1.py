@@ -172,8 +172,16 @@ class Game():
         x1, y1, x2, y2 = self.preyCoordinates
         x, y = NewSnakeCoordinates
 
+        #get the prey center
+        preyCenterX = (x1+x2) // 2
+        preyCenterY = (y1+y2) // 2
+      
+        #set capture distance, which is the threshold distance between prey center and snake head center that
+        #dictates if prey is captured or not.
+        captureDistance = PREY_ICON_WIDTH
+
         #check if prey was captured. this determines the next step of list manipulation
-        if x1 < x < x2 and y1 < y < y2: #cheks if the new coordingate is inside the prey rectangle
+        if abs(x - preyCenterX) < captureDistance and abs(y - preyCenterY) < captureDistance: #cheks if the snake head center is close enough to prey center
             self.score += 1 #add point
             self.queue.put({"score": self.score}) #put score task in queue
             self.createNewPrey() #create new prey since existing one has been captured
