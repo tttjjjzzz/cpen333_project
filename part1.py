@@ -264,7 +264,7 @@ class Game():
             xCoord = random.randint(THRESHOLD, WINDOW_WIDTH-THRESHOLD)
             yCoord = random.randint(THRESHOLD, WINDOW_HEIGHT-THRESHOLD)
 
-             # check not on snake
+             # check that the potential prey coordinate is not on snake
             notOnSnake = all((abs(xCoord - sx) > SNAKE_ICON_WIDTH and abs(yCoord - sy) > SNAKE_ICON_WIDTH) for sx, sy in self.snakeCoordinates)
             
             # check not on score text (approximate top-left area)
