@@ -131,7 +131,7 @@ class Game():
             time.sleep(SPEED)
             
 
-    def whenAnArrowKeyIsPressed(self, e) -> None:
+    def whenAnArrowKeyIsPressed(self, e: object) -> None:
         """ 
             This method is bound to the arrow keys
             and is called when one of those is clicked.
@@ -148,7 +148,7 @@ class Game():
             return
         self.direction = e.keysym
 
-#DALIWDMIWALD
+
     def move(self) -> None:
         """ 
             This method implements what is needed to be done
@@ -178,7 +178,7 @@ class Game():
       
         #set capture distance, which is the threshold distance between prey center and snake head center that
         #dictates if prey is captured or not.
-        captureDistance = PREY_ICON_WIDTH
+        captureDistance = SNAKE_ICON_WIDTH
 
         #check if prey was captured. this determines the next step of list manipulation
         if abs(x - preyCenterX) < captureDistance and abs(y - preyCenterY) < captureDistance: #cheks if the snake head center is close enough to prey center
@@ -195,8 +195,7 @@ class Game():
         self.queue.put({"move": self.snakeCoordinates})
 
 
-#TIGER 
-#DONE FOR NOW?
+
     def calculateNewCoordinates(self) -> tuple:
         """
             This method calculates and returns the new 
@@ -214,18 +213,17 @@ class Game():
         #SNAKE_ICON_WIDTH is a predefined value that is the width of snake and also the distance the snake will also travel per tick/step
         match self.direction:
             case "Left":
-                return(lastX-SNAKE_ICON_WIDTH, lastY)
+                return(lastX-SNAKE_ICON_WIDTH, lastY) #minus in x direction, hence left
             case "Right":
-                return(lastX+SNAKE_ICON_WIDTH, lastY)
+                return(lastX+SNAKE_ICON_WIDTH, lastY) #plus in x direction, hence right
             case "Up":
-                return(lastX, lastY-SNAKE_ICON_WIDTH)
+                return(lastX, lastY-SNAKE_ICON_WIDTH) #minus in y direction, hence up (note the inverted vertical coordinates)
             case "Down":
-                return(lastX, lastY+SNAKE_ICON_WIDTH)
+                return(lastX, lastY+SNAKE_ICON_WIDTH) #plus in y direction, hence down (note the inverted vertical coordinates)
             #no need for default?
 
 
-#"dwadwadwada
-    def isGameOver(self, snakeCoordinates) -> None:
+    def isGameOver(self, snakeCoordinates: tuple) -> None:
         """
             This method checks if the game is over by 
             checking if now the snake has passed any wall
@@ -236,16 +234,17 @@ class Game():
         x, y = snakeCoordinates
         #complete the method implementation below
 
+        #check if the next move puts the head of snake out of bounds (defined by 0 and windows height and width)
         if x-SNAKE_ICON_WIDTH//2 < 0 or x+SNAKE_ICON_WIDTH//2 > WINDOW_WIDTH or y-SNAKE_ICON_WIDTH//2 < 0 or y+SNAKE_ICON_WIDTH//2 > WINDOW_HEIGHT:
             self.gameNotOver = False
             self.queue.put({"game_over": True})
+        #otherwise, also sees if the snake have any intersection with self
         elif snakeCoordinates in self.snakeCoordinates:
             self.gameNotOver = False
             self.queue.put({"game_over": True})
 
         
 
-#TIGER
     def createNewPrey(self) -> None:
         """ 
             This methods picks an x and a y randomly as the coordinate 
@@ -259,19 +258,29 @@ class Game():
         """
         THRESHOLD = 15   #sets how close prey can be to borders
         #complete the method implementation below
-        
-        xCoord = random.randint(THRESHOLD, WINDOW_WIDTH-THRESHOLD)
-        yCoord = random.randint(THRESHOLD, WINDOW_HEIGHT-THRESHOLD)
+        while True:
 
+            #generate rendom coordiantees
+            xCoord = random.randint(THRESHOLD, WINDOW_WIDTH-THRESHOLD)
+            yCoord = random.randint(THRESHOLD, WINDOW_HEIGHT-THRESHOLD)
+
+             # check not on snake
+            notOnSnake = all((abs(xCoord - sx) > SNAKE_ICON_WIDTH and abs(yCoord - sy) > SNAKE_ICON_WIDTH) for sx, sy in self.snakeCoordinates)
+            
+            # check not on score text (approximate top-left area)
+            notOnScore = not (xCoord < 120 and yCoord < 30)
+            
+            #if the generated coordinated does not cover the current snake position or score area, then proceed
+            if notOnSnake and notOnScore:
+                break
+
+        #finally, set prey's coordinate
         preyCoord = (xCoord-PREY_ICON_WIDTH//2, yCoord-PREY_ICON_WIDTH//2, xCoord+PREY_ICON_WIDTH//2, yCoord+PREY_ICON_WIDTH//2)
 
+        #set prey coordinate (update self.)
         self.preyCoordinates = preyCoord
 
         self.queue.put({"prey": preyCoord})
-
-
-
-        
 
 
 if __name__ == "__main__":
