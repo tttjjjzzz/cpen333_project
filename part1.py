@@ -167,7 +167,9 @@ class Game():
         
         #check if game is over
         self.isGameOver(NewSnakeCoordinates)
-
+        if not self.gameNotOver:
+            return # exit early if game is over, no need to update snake coordinates or anything else!
+        
         #set tuples for convenience sake
         x1, y1, x2, y2 = self.preyCoordinates
         x, y = NewSnakeCoordinates
@@ -264,7 +266,7 @@ class Game():
             xCoord = random.randint(THRESHOLD, WINDOW_WIDTH-THRESHOLD)
             yCoord = random.randint(THRESHOLD, WINDOW_HEIGHT-THRESHOLD)
 
-             # check that the potential prey coordinate is not on snake
+             # check not on snake
             notOnSnake = all((abs(xCoord - sx) > SNAKE_ICON_WIDTH and abs(yCoord - sy) > SNAKE_ICON_WIDTH) for sx, sy in self.snakeCoordinates)
             
             # check not on score text (approximate top-left area)
